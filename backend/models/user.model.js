@@ -1,4 +1,7 @@
+const usuarios = [];
+
 class User {
+
   constructor(
     name,
     lastNameP,
@@ -21,6 +24,15 @@ class User {
     this.email = email;
     this.password = password;
     this.role = role;
+  }
+
+  static async create(user) {
+    usuarios.push(user);
+    return user;
+  }
+
+  static async findByEmail(email) {
+    return usuarios.find(u => u.email === email);
   }
 }
 
