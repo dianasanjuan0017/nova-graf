@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 
-const registerUser = (req, res) => {
+// REGISTRO
+const registerUser = async (req, res) => {
 
   const {
     name,
@@ -50,14 +51,17 @@ const registerUser = (req, res) => {
     password
   );
 
-  return res.status(200).json({
+  await User.create(newUser);
+
+  return res.status(201).json({
     message: "Usuario registrado correctamente",
     user: newUser
   });
 };
 
-// 🔐 LOGIN
-const loginUser = (req, res) => {
+
+// LOGIN
+const loginUser = async (req, res) => {
 
   const { email, password } = req.body;
 
@@ -67,18 +71,24 @@ const loginUser = (req, res) => {
     });
   }
 
-  // Simulación de validación
-  if (email === "admin@gmail.com" && password === "123456") {
-    return res.status(200).json({
-      message: "Inicio de sesión exitoso",
-      role: "admin"
+  const user = await User.findByEmail(email);
+
+  if (!user) {
+    return res.status(404).json({
+      message: "Usuario no encontrado"
     });
   }
 
-  return res.status(401).json({
-    message: "Credenciales incorrectas"
-  });
+  if (user.password !== password) {
+    return res.status(401).json({
+      message: "Contraseña incorrecta"
+    });
+  }
 
+  return res.status(200).json({
+    message: "Inicio de sesión exitoso",
+    user
+  });
 };
 
 module.exports = { registerUser, loginUser };
